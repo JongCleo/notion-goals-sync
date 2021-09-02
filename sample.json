@@ -1,0 +1,54 @@
+{
+    archived: false,
+    created_time: "2021-08-16T06:10:00.000Z",
+    id: "f5ba3946-96f3-455c-85fd-a5a7cf170f1c",
+    last_edited_time: "2021-08-16T06:10:00.000Z",
+    object: "page",
+    parent: -{
+        database_id: "51885ff9-8975-4ff3-bbbc-dd7a275ecbdf",
+        type: "database_id"
+    },
+    properties: -{
+        Display: -{
+            id: "[o`i",
+            select: -{
+                color: "green",
+                id: "50c49c9c-d12d-4e89-b110-69a199fd26a9",
+                name: "Sleep"
+            },
+            type: "select"
+        },
+        Due: -{
+            date: -{
+                end: null,
+                start: "2021-08-23"
+            },
+            id: "fqng",
+            type: "date"
+        },
+        Goal: -{
+            id: "JaG_",
+            relation: [],
+            type: "relation"
+        },
+        Subgoal: -{
+            id: "title",
+            title: -[
+               -{
+                    annotations: +{6 items},
+                    href: null,
+                    plain_text: "6/7 Sleep, 1/2 consecutive weeks",
+                    text: +{2 items},
+                    type: "text"
+                }
+            ],
+            type: "title"
+        },
+        uuid: -{
+            id: "ct\\b",
+            rich_text: [],
+            type: "rich_text"
+        }
+    },
+    url: -https://www.notion.so/6-7-Sleep-1-2-consecutive-weeks-f5ba394696f3455c85fda5a7cf170f1c
+},
