@@ -61,55 +61,49 @@ foreign_goals = [
 # Update foreign goals if matched on uuid, otherwise add new goals 
 for origin_goal in origin_goals:
     exists_in_foreign = False
+    payload = {"properties":{}}
+    payload["properties"][foreign_primary_key] = {
+        "title": [{
+            "text":{
+                "content": origin_goal["properties"][origin_primary_key]["title"][0]["text"]["content"]
+            }
+        }]
+    }
+    if "Due" in origin_goal["properties"]:
+        payload["properties"][foreign_due_date] = {
+            "date": {
+                "start": origin_goal["properties"][origin_due_date]["date"]["start"]
+            }                        
+        }
+    if "Display" in origin_goal["properties"]: 
+        payload["properties"]["Category"] = {
+            "select": {
+                "name": origin_goal["properties"]["Display"]["select"]["name"] 
+            }
+        }
+    if "Accomplished" in origin_goal["properties"] and "date" in origin_goal["properties"]["Accomplished"]: 
+        payload["properties"]["Status"] = {
+            "select": {
+                "name": "Success"
+            }
+        }
+    if "Weeks Pushed" in origin_goal["properties"]: 
+        payload["properties"]["Weeks Pushed"] = {
+            "number": origin_goal["properties"]["Weeks Pushed"]["number"]
+        }             
 
     for foreign_goal in foreign_goals:
         if ( "uuid" in foreign_goal["properties"]
         and foreign_goal["properties"]["uuid"]["rich_text"] != []
         and origin_goal["properties"]["uuid"]["rich_text"][0]["text"]["content"]
         == foreign_goal["properties"]["uuid"]["rich_text"][0]["text"]["content"]):            
-            update_payload = {"page_id": foreign_goal["id"], "properties":{}}
-            update_payload["properties"][foreign_primary_key] = {
-                "title": [{
-                    "text":{
-                        "content": origin_goal["properties"][origin_primary_key]["title"][0]["text"]["content"]
-                    }
-                }]
-            }
-            if "Due" in origin_goal["properties"]:
-                update_payload["properties"][foreign_due_date] = {
-                    "date": {
-                        "start": origin_goal["properties"][origin_due_date]["date"]["start"]
-                    }                        
-                }
-            if "Display" in origin_goal["properties"]: 
-                update_payload["properties"]["Category"] = {
-                    "select": {
-                        "name": origin_goal["properties"]["Display"]["select"]["name"] 
-                    }
-                }
-            if "Accomplished" in origin_goal["properties"] and "date" in origin_goal["properties"]["Accomplished"]: 
-                update_payload["properties"]["Status"] = {
-                    "select": {
-                        "name": "Success"
-                    }
-                }
-            if "Weeks Pushed" in origin_goal["properties"]: 
-                update_payload["properties"]["Weeks Pushed"] = {
-                    "number": origin_goal["properties"]["Weeks Pushed"]["number"]
-                }             
-            foreign_notion.pages.update(**update_payload)
+            payload["page_id"] = foreign_goal["id"]                        
+            foreign_notion.pages.update(**payload)
             exists_in_foreign = True
 
-    if (not exists_in_foreign):
-        create_payload = {"parent": {"database_id": os.environ["TABLE_ID_B"]}, "properties":{}}
-        create_payload["properties"][foreign_primary_key] = {
-            "title": [{                
-                "text": {
-                    "content": origin_goal["properties"][origin_primary_key]["title"][0]["text"]["content"]                                
-                }
-            }]
-        }        
-        create_payload["properties"]["uuid"] = {
+    if (not exists_in_foreign):           
+        payload ["parent"] = {"database_id": os.environ["TABLE_ID_B"]}    
+        payload["properties"]["uuid"] = {
             "rich_text": [{
                 "type": "text",
                 "text": {
@@ -118,36 +112,13 @@ for origin_goal in origin_goals:
             }]
         }
        
-        create_payload["properties"]["Owner"] = {
+        payload["properties"]["Owner"] = {
             "people": [{
                 "object": "user",   
                 "id": foreign_owner_id
             }]
         }
 
-        if "Due" in origin_goal["properties"]:
-            create_payload["properties"][foreign_due_date] = {
-                "date": {
-                    "start": origin_goal["properties"][origin_due_date]["date"]["start"]
-                }                        
-            }
-        if "Display" in origin_goal["properties"]: 
-            create_payload["properties"]["Category"] = {
-                "select": {
-                    "name": origin_goal["properties"]["Display"]["select"]["name"] 
-                }
-            }
-        if "Accomplished" in origin_goal["properties"] and "date" in origin_goal["properties"]["Accomplished"]: 
-            create_payload["properties"]["Status"] = {
-                "select": {
-                    "name": "Success"
-                }
-            }
-        if "Weeks Pushed" in origin_goal["properties"]: 
-            create_payload["properties"]["Weeks Pushed"] = {
-                "number": origin_goal["properties"]["Weeks Pushed"]["number"]
-            } 
-
         foreign_notion.pages.create(
-            **create_payload
+            **payload
         )    
